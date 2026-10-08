@@ -1,14 +1,26 @@
 import SwiftUI
 import ServiceManagement
 
+// STINT has one main window. Giving it a fixed value means openWindow(id:value:) brings the
+// existing window forward, or recreates it if it was closed, instead of stacking duplicates.
+let mainWindowID = "main"
+let mainWindowValue = "main"
+
+var appVersion: String {
+    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+}
+
 @main
 struct STINTApp: App {
     @AppStorage("showMenuBarIcon") private var showMenuBarIcon = true
 
     var body: some Scene {
-        // Main window
-        WindowGroup {
+        // Main window. A WindowGroup rather than a Window scene: closing a Window scene
+        // quits the app, which would take the menu bar widget with it.
+        WindowGroup(id: mainWindowID, for: String.self) { _ in
             ContentView()
+        } defaultValue: {
+            mainWindowValue
         }
         .windowStyle(.automatic)
         .windowResizability(.contentSize)
@@ -112,7 +124,7 @@ struct SettingsView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                Text("Version 1.3.0")
+                Text("Version \(appVersion)")
                     .foregroundColor(.secondary)
                 
                 Text("A modern network utility for macOS")
