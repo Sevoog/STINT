@@ -1,3 +1,9 @@
+// STINTApp.swift
+// STINT — Sev's Tiny Internet Network Tool
+// Created by Sevag Bardakjian
+// Copyright © 2026 Sevag Bardakjian
+// SPDX-License-Identifier: GPL-3.0-only
+
 import SwiftUI
 import ServiceManagement
 
@@ -130,11 +136,27 @@ struct SettingsView: View {
                 Text("A modern network utility for macOS")
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                
+
+                // GPL-3.0 "Appropriate Legal Notices": copyright, no warranty,
+                // that it may be redistributed under the license, and where to
+                // read the license.
+                VStack(spacing: 4) {
+                    Text("© 2026 Sevag Bardakjian · GNU GPL v3")
+                    Text("Free software with ABSOLUTELY NO WARRANTY. You may redistribute it under the terms of the GPL v3.")
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let source = URL(string: "https://github.com/Sevoog/STINT") {
+                        Link("Source code and license", destination: source)
+                            .foregroundColor(.accentColor)
+                    }
+                }
+                .font(.system(size: 10))
+                .foregroundColor(.secondary)
+
                 Spacer()
             }
             .padding(20)
-            .frame(width: 400, height: 220)
+            .frame(width: 400, height: 340)
             .tabItem {
                 Label("About", systemImage: "info.circle")
             }

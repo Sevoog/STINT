@@ -1,3 +1,9 @@
+// ContentView.swift
+// STINT — Sev's Tiny Internet Network Tool
+// Created by Sevag Bardakjian
+// Copyright © 2026 Sevag Bardakjian
+// SPDX-License-Identifier: GPL-3.0-only
+
 import SwiftUI
 
 // The set of tools shown in the tab bar. Adding or reordering a tool is a single

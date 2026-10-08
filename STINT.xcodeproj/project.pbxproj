@@ -331,7 +331,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = STINT;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Sevag Bardakjian";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Sevag Bardakjian. Licensed under the GNU GPL v3.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "STINT uses your local network to browse Bonjour services and to ping and scan devices on your network.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -362,7 +362,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = STINT;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 Sevag Bardakjian";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Sevag Bardakjian. Licensed under the GNU GPL v3.";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "STINT uses your local network to browse Bonjour services and to ping and scan devices on your network.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

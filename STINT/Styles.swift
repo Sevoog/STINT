@@ -1,3 +1,9 @@
+// Styles.swift
+// STINT — Sev's Tiny Internet Network Tool
+// Created by Sevag Bardakjian
+// Copyright © 2026 Sevag Bardakjian
+// SPDX-License-Identifier: GPL-3.0-only
+
 import SwiftUI
 
 // Custom styled container with better contrast
