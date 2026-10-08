@@ -16,3 +16,6 @@ Packages/
 
 # Claude Code per-machine settings
 .claude/settings.local.json
+
+# Release downloads (attached to GitHub Releases, not committed)
+dist/

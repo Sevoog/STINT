@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><title>frame</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; }
+  body { font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Inter, sans-serif; color: #eceaf6;
+         background: radial-gradient(1200px 800px at 15% 0%, #262062 0%, #13122e 45%, #07070f 100%); position: relative; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 48px 48px;
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), transparent 70%); }
+  .brand { position: absolute; left: 80px; top: 60px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 30px; letter-spacing: -.01em; }
+  .brand img { width: 46px; height: 46px; border-radius: 10px; }
+  .brand small { font-weight: 500; font-size: 17px; color: #8c89ab; letter-spacing: 0; margin-left: 6px; }
+  .copy { position: absolute; left: 80px; }
+  h1 { font-weight: 800; letter-spacing: -.025em; line-height: 1.04; }
+  h1 em { font-style: normal; color: #2fe0f2; }
+  p.sub { color: #b5b2cc; line-height: 1.4; }
+  .pills { display: flex; flex-wrap: wrap; gap: 12px; }
+  .pill { border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 9px 18px; font-size: 18px; color: #d8d6ea; background: rgba(255,255,255,.04); }
+  .shot { position: absolute; border-radius: 14px; overflow: hidden; background: #1e1e1e;
+          box-shadow: 0 40px 120px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.09); }
+  .shot img { display: block; width: 100%; }
+  .foot { position: absolute; left: 80px; bottom: 40px; font-size: 17px; color: #6c6987; }
+
+  /* macOS window title bar, drawn here because the raw renders are content only.
+     --k is the screenshot's scale from points to frame pixels. */
+  .titlebar { position: relative; height: calc(28px * var(--k)); background: #1e1e1e; }
+  .titlebar .lights { position: absolute; left: calc(9px * var(--k)); top: 50%; transform: translateY(-50%); display: flex; gap: calc(8px * var(--k)); }
+  .titlebar .lights i { width: calc(12px * var(--k)); height: calc(12px * var(--k)); border-radius: 50%; display: block; }
+  .titlebar .lights i:nth-child(1) { background: #ff5f57; }
+  .titlebar .lights i:nth-child(2) { background: #febc2e; }
+  .titlebar .lights i:nth-child(3) { background: #28c840; }
+  .titlebar .title { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+                     font-size: calc(13px * var(--k)); font-weight: 600; color: #bdbdbd; }
+
+  /* side: copy left, whole screenshot right */
+  .side .copy { top: 190px; width: 540px; }
+  .side h1 { font-size: 58px; }
+  .side p.sub { margin-top: 26px; font-size: 24px; }
+  .side .pills { margin-top: 34px; }
+  .side .shot { left: 690px; width: 1150px; top: 50%; transform: translateY(-50%); --k: 1.5333; }
+
+  /* showcase: narrow copy left, the whole window right, as large as fits */
+  .showcase .copy { top: 200px; width: 500px; }
+  .showcase h1 { font-size: 54px; }
+  .showcase p.sub { margin-top: 24px; font-size: 23px; }
+  .showcase .pills { margin-top: 30px; }
+  .showcase .shot { left: 620px; width: 1220px; top: 50%; transform: translateY(-50%); --k: 1.6267; }
+
+  /* menubar: copy left, the menu bar widget panel right */
+  .menubar .copy { top: 190px; width: 640px; }
+  .menubar h1 { font-size: 58px; }
+  .menubar p.sub { margin-top: 26px; font-size: 24px; }
+  .menubar .pills { margin-top: 34px; }
+  .menubar .shot { left: 1180px; width: 540px; top: 50%; transform: translateY(-50%); border-radius: 18px; }
+</style></head><body class="__LAYOUT__">
+<div class="grid"></div>
+<div class="brand"><img src="__ICON__">STINT<small>Sev's Tiny Internet Network Tool</small></div>
+__CONTENT__
+<div class="foot">STINT · native macOS network utility · demo data shown</div>
+</body></html>

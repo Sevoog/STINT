@@ -2,6 +2,44 @@
 
 **Sev's Tiny Internet Network Tool** — A modern macOS network utility app inspired by Apple's classic Network Utility that was deprecated after macOS Monterey. Built with SwiftUI for both Intel and Apple Silicon Macs.
 
+Free and open source under the [GNU GPL v3](LICENSE). No accounts, analytics, telemetry, or crash reporting. See [Privacy](#privacy) for what STINT contacts and stores.
+
+If STINT is useful to you, you can [buy me a coffee](https://buymeacoffee.com/sevoog).
+
+## Screenshots
+
+![Ping: a live latency chart with current, min, avg, max and loss](marketing/screenshots/framed/01-ping.png)
+![Info: addresses, link speed, vendor and model for each network adapter](marketing/screenshots/framed/02-info.png)
+![Port Scan: common TCP services or any range](marketing/screenshots/framed/03-port-scan.png)
+![Menu bar widget: connection status, local IP and a quick ping](marketing/screenshots/framed/04-menu-bar.png)
+
+<details>
+<summary>More screenshots</summary>
+
+![Traceroute: every hop to a host](marketing/screenshots/framed/05-traceroute.png)
+![Lookup: DNS records of any type](marketing/screenshots/framed/06-lookup.png)
+![Bonjour: services announced on your network](marketing/screenshots/framed/07-bonjour.png)
+
+</details>
+
+*Screenshots use placeholder demo data; no real network details are shown.*
+
+## Install
+
+1. Download the latest **STINT-x.y.z.zip** from [Releases](https://github.com/Sevoog/STINT/releases/latest).
+2. Unzip it and drag **STINT** into your **Applications** folder.
+3. Open STINT. Because STINT isn't notarized by Apple, the first time you open it macOS says Apple could not verify that it is free of malware. Click **Done**.
+4. Open **System Settings → Privacy & Security** and scroll down to **Security**. Next to the message that STINT was blocked, click **Open Anyway**, and enter your password if asked.
+5. Click **Open Anyway** in the confirmation that appears. From then on, STINT opens normally.
+
+You'll repeat steps 3–5 each time you install a new version. On macOS 13 and 14 you can instead Control-click STINT in Applications, choose **Open**, then click **Open**.
+
+To check your download, compare its checksum with the one listed on the release page:
+
+```bash
+shasum -a 256 ~/Downloads/STINT-*.zip
+```
+
 ## Features
 
 - **Info** - View network interface information (IP address, MAC address, link status, transfer statistics)
@@ -72,7 +110,7 @@ Results from every tool can be exported:
 The app requires network access to function. Since it uses system networking commands (`ping`, `traceroute`, `netstat`, etc.), it runs without app sandbox restrictions.
 
 For full functionality, you may need to:
-- Allow the app in System Settings > Privacy & Security if macOS blocks it
+- Approve STINT the first time you open it, because it isn't notarized by Apple (see [Install](#install))
 - Allow **Local Network** access when prompted (macOS 15 and later). Bonjour browsing and port scans of devices on your network need it; you can change it later in System Settings > Privacy & Security > Local Network
 
 ## macOS 26 Liquid Glass
@@ -89,6 +127,14 @@ The Liquid Glass styling is gated behind an availability check, so on macOS 13�
 - The Finger protocol is largely deprecated but included for completeness
 - Some operations (like traceroute) may require running the app with elevated privileges for full functionality
 
+## Privacy
+
+STINT has no accounts, analytics, telemetry, or crash reporting, and makes no network requests on its own.
+
+- **Network traffic** goes only to the hosts you point a tool at, plus 8.8.8.8, 1.1.1.1 or apple.com when you click a quick-ping button in the menu bar. DNS lookups use your Mac's configured DNS servers, and Whois asks the public whois servers for the domain you look up. Bonjour listens for services announced on your local network.
+- **Stored data** is limited to STINT's settings (default ping host and count, menu bar icon, launch at login).
+- **Exports** are written only where you choose, or to your Downloads folder with Quick Export.
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for the full release history.
@@ -97,6 +143,14 @@ See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 
 Created by Sevag Bardakjian
 
+## Contributing
+
+Bug reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to build, and the [Contributor License Agreement](CLA.md) you'll be asked to sign on your first pull request. Please report security issues privately; see [SECURITY.md](SECURITY.md).
+
 ## License
 
-This is an open-source project. Use at your own risk.
+STINT is free software, licensed under the [GNU General Public License v3.0](LICENSE) (`GPL-3.0-only`). You can use, study, change, and share it. If you distribute a modified version, you must release its source code under the same license.
+
+STINT comes with **absolutely no warranty**. Copyright © 2026 Sevag Bardakjian.
+
+If you'd like to use STINT under terms other than the GPL, for example in a closed-source product, open an issue or get in touch through GitHub.

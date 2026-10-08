@@ -5,7 +5,14 @@ All notable changes to STINT are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.1] - 2026-10-07
+## [1.3.1] - 2026-10-08
+
+### Licensing
+- **STINT is now free and open source under the GNU GPL v3** (`GPL-3.0-only`), with a
+  Contributor License Agreement for pull requests ([CLA.md](CLA.md)), contributor and
+  security guides ([CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md)), and a
+  CLA Assistant workflow. Source files carry SPDX license headers, and the About screens
+  show the GPL notices (copyright, no warranty, where to get the source).
 
 ### Fixed
 - **Pings no longer run forever in the background.** An unlimited ping kept running after
@@ -33,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   STINT needs access, and Bonjour and Port Scan say so when access is denied instead of
   silently finding nothing.
 - Copyright notice in the app's About panel.
+- **README:** screenshots, install steps for the un-notarized download (Open Anyway), a
+  Privacy section, and a Buy Me a Coffee link (also the repository's Sponsor button).
+- `marketing/`: renders the README screenshots from the app's own views with placeholder
+  data (`render.sh`) and frames them (`build.py`).
 
 ### Changed
 - The Settings → About version number now comes from the app bundle instead of being
