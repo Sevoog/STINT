@@ -91,6 +91,7 @@ struct PortScanView: View {
             }
         }
         .padding(.bottom, 12)
+        .onDisappear { scanTask?.cancel() }
     }
 
     private func runScan() {
@@ -120,27 +121,35 @@ struct PortScanView: View {
                 output += "Scanning \(targetAddress) (\(portsToScan.count) ports)...\n\n"
             }
 
-            let openPorts = await scanPorts(host: targetAddress, ports: portsToScan)
+            let (openPorts, deniedCount) = await scanPorts(host: targetAddress, ports: portsToScan)
 
             await MainActor.run {
-                if !Task.isCancelled {
-                    for port in openPorts.sorted() {
-                        output += "Port \(port) (\(serviceName(for: port))) is open\n"
-                    }
-                    output += "\n--- Port scan complete ---\n"
-                    output += "Open ports found: \(openPorts.count)\n"
+                // A stopped scan has already reset the UI, and a new scan may be running;
+                // only a scan that ran to completion reports results.
+                guard !Task.isCancelled else { return }
+                for port in openPorts.sorted() {
+                    output += "Port \(port) (\(serviceName(for: port))) is open\n"
                 }
+                if deniedCount > 0 {
+                    output += "\nmacOS blocked \(deniedCount) connection\(deniedCount == 1 ? "" : "s") because STINT "
+                    output += "doesn't have Local Network access. Turn it on in System Settings → "
+                    output += "Privacy & Security → Local Network, then scan again.\n"
+                }
+                output += "\n--- Port scan complete ---\n"
+                output += "Open ports found: \(openPorts.count)\n"
                 isScanning = false
             }
         }
     }
 
     // Scan ports concurrently with a bounded number of in-flight connections.
-    private func scanPorts(host: String, ports: [Int]) async -> [Int] {
+    // Returns the open ports and how many probes macOS blocked for lack of Local Network access.
+    private func scanPorts(host: String, ports: [Int]) async -> (open: [Int], denied: Int) {
         let maxConcurrent = 64
         var openPorts: [Int] = []
+        var deniedCount = 0
 
-        await withTaskGroup(of: (Int, Bool).self) { group in
+        await withTaskGroup(of: (Int, PortState).self) { group in
             var index = 0
 
             for _ in 0..<min(maxConcurrent, ports.count) {
@@ -149,8 +158,12 @@ struct PortScanView: View {
                 group.addTask { (port, await checkPort(host: host, port: port)) }
             }
 
-            while let (port, isOpen) = await group.next() {
-                if isOpen { openPorts.append(port) }
+            while let (port, state) = await group.next() {
+                switch state {
+                case .open: openPorts.append(port)
+                case .localNetworkDenied: deniedCount += 1
+                case .closed: break
+                }
                 await MainActor.run { scannedCount += 1 }
 
                 if Task.isCancelled {
@@ -166,7 +179,7 @@ struct PortScanView: View {
             }
         }
 
-        return openPorts
+        return (openPorts, deniedCount)
     }
 
     private func stopScan() {
@@ -183,7 +196,11 @@ struct PortScanView: View {
     }
 }
 
-private func checkPort(host: String, port: Int) async -> Bool {
+private enum PortState {
+    case open, closed, localNetworkDenied
+}
+
+private func checkPort(host: String, port: Int) async -> PortState {
     return await withCheckedContinuation { continuation in
         let connection = NWConnection(
             host: NWEndpoint.Host(host),
@@ -191,32 +208,37 @@ private func checkPort(host: String, port: Int) async -> Bool {
             using: .tcp
         )
 
+        // The state handler and the timeout both run on this serial queue, so `resumed`
+        // is never read and written concurrently. Resuming a continuation twice crashes.
+        let queue = DispatchQueue(label: "com.sevag.stint.portscan")
         var resumed = false
-        let resumeOnce: (Bool) -> Void = { result in
-            if !resumed {
-                resumed = true
-                continuation.resume(returning: result)
-            }
+        let finish: (PortState) -> Void = { result in
+            guard !resumed else { return }
+            resumed = true
+            connection.cancel()
+            continuation.resume(returning: result)
         }
 
         connection.stateUpdateHandler = { state in
             switch state {
             case .ready:
-                connection.cancel()
-                resumeOnce(true)
+                finish(.open)
+            case .waiting:
+                // A refused connection waits for a retry rather than failing outright.
+                // It's not going to open, and it may be macOS blocking local network access.
+                finish(connection.currentPath?.unsatisfiedReason == .localNetworkDenied ? .localNetworkDenied : .closed)
             case .failed, .cancelled:
-                resumeOnce(false)
+                finish(.closed)
             default:
                 break
             }
         }
 
-        connection.start(queue: .global())
+        connection.start(queue: queue)
 
         // Timeout after 1 second
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
-            connection.cancel()
-            resumeOnce(false)
+        queue.asyncAfter(deadline: .now() + 1.0) {
+            finish(.closed)
         }
     }
 }

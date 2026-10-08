@@ -73,7 +73,7 @@ The app requires network access to function. Since it uses system networking com
 
 For full functionality, you may need to:
 - Allow the app in System Settings > Privacy & Security if macOS blocks it
-- Grant terminal/network permissions if prompted
+- Allow **Local Network** access when prompted (macOS 15 and later). Bonjour browsing and port scans of devices on your network need it; you can change it later in System Settings > Privacy & Security > Local Network
 
 ## macOS 26 Liquid Glass
 

@@ -93,6 +93,11 @@ class BonjourBrowser: ObservableObject {
                     if self?.browsers.count == 1 {
                         self?.statusMessage = "Browsing for services..."
                     }
+                case .waiting(let error) where error == .dns(DNSServiceErrorType(kDNSServiceErr_PolicyDenied)):
+                    // macOS 15+ blocks Bonjour until the user grants Local Network access;
+                    // without this the browse just finds nothing.
+                    self?.stop()
+                    self?.statusMessage = "STINT doesn't have Local Network access. Turn it on in System Settings → Privacy & Security → Local Network."
                 case .failed(let error):
                     // Only show error if it's the only browser or a significant error
                     if self?.browsers.count == 1 {
@@ -324,6 +329,7 @@ struct BonjourView: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 12)
         }
+        .onDisappear { browser.stop() }
     }
 }
 
