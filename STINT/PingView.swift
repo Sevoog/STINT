@@ -127,6 +127,7 @@ struct PingView: View {
             if address.isEmpty { address = defaultPingHost }
             if pingCount.isEmpty { pingCount = String(defaultPingCount) }
         }
+        .onDisappear { runner.stop() }
         .onChange(of: runner.output) { newValue in
             samples = parsePingSamples(newValue)
         }
@@ -136,7 +137,12 @@ struct PingView: View {
         samples = []
         var args: [String] = []
 
-        if !unlimitedPings, let count = Int(pingCount), count > 0 {
+        if !unlimitedPings {
+            // An unparseable count used to fall through to an unlimited ping.
+            guard let count = Int(pingCount.trimmingCharacters(in: .whitespaces)), count > 0 else {
+                runner.output = "Enter a ping count of 1 or more, or choose unlimited pings.\n"
+                return
+            }
             args.append("-c")
             args.append(String(count))
         }

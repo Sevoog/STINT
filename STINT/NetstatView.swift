@@ -77,6 +77,7 @@ struct NetstatView: View {
             }
         }
         .padding(.bottom, 12)
+        .onDisappear { runner.stop() }
     }
     
     private func runNetstat() {

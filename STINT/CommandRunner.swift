@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 
 class CommandRunner: ObservableObject {
     @Published var output: String = ""
@@ -6,7 +7,25 @@ class CommandRunner: ObservableObject {
     
     private var process: Process?
     private var outputPipe: Pipe?
-    
+    private var terminateObserver: NSObjectProtocol?
+
+    init() {
+        // Child processes outlive the app unless killed, so an unlimited ping would keep
+        // running after STINT quits. Stop whatever is running when the app terminates.
+        terminateObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.willTerminateNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.stop()
+        }
+    }
+
+    deinit {
+        // The owning view went away (tab switch, window closed) — don't orphan the process.
+        if let terminateObserver { NotificationCenter.default.removeObserver(terminateObserver) }
+        outputPipe?.fileHandleForReading.readabilityHandler = nil
+        process?.terminate()
+    }
+
     func run(command: String, arguments: [String]) {
         stop()
         
@@ -33,15 +52,22 @@ class CommandRunner: ObservableObject {
             }
         }
         
-        process.terminationHandler = { [weak self] _ in
+        process.terminationHandler = { [weak self] finished in
             DispatchQueue.main.async {
-                self?.isRunning = false
+                // A stopped process can finish after a new run has started; only the
+                // current process may clear the running state.
+                guard let self, self.process === finished else { return }
+                self.isRunning = false
             }
         }
         
         do {
             try process.run()
         } catch {
+            // terminate() raises on a process that never launched, so don't keep it.
+            self.process = nil
+            pipe.fileHandleForReading.readabilityHandler = nil
+            self.outputPipe = nil
             DispatchQueue.main.async {
                 self.output = "Error: \(error.localizedDescription)"
                 self.isRunning = false
