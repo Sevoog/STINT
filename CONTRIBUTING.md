@@ -15,21 +15,21 @@ Requirements: macOS 13 or later and Xcode 15 or later (Xcode 26 or later for the
 ```bash
 git clone https://github.com/Sevoog/STINT.git
 cd STINT
-open STINT.xcodeproj    # ⌘R to run
+open STINT.xcodeproj    # ⌘R to run, ⌘U to run the tests
 ```
 
 Or from the command line:
 
 ```bash
-xcodebuild -project STINT.xcodeproj -scheme STINT build
+xcodebuild -project STINT.xcodeproj -scheme STINT test
 ```
 
 ## Guidelines
 
 - **No third-party dependencies.** STINT uses only Apple's frameworks. If you think a dependency is truly needed, raise it in an issue first.
 - **Match the surrounding code:** its naming, comment style, and structure. New tools are added to the `Tool` enum in `ContentView.swift`; simple "address in, command output out" tools can reuse `AddressCommandTool`.
-- **Keep the build clean.** No new compiler warnings.
-- **Privacy is a feature.** STINT makes no network requests on its own; it only contacts the hosts you point a tool at. If your change contacts a new host or service, or stores new data, add it to the Privacy section of [README.md](README.md). No analytics or telemetry.
+- **Keep the build clean.** No new compiler warnings, and all tests pass. Add tests in `STINTTests` for logic that can be tested without the UI, such as parsers.
+- **Privacy is a feature.** STINT makes no network requests on its own; it only contacts the hosts you point a tool at. If your change contacts a new host or service, runs a new system tool, or stores new data, add it to the Privacy & Security section of [README.md](README.md). No analytics or telemetry.
 - **Screenshots:** if you change how a tool looks, you can regenerate the README screenshots with `marketing/render.sh` and `marketing/build.py`.
 - **Update the CHANGELOG.** Add a short entry under `[Unreleased]` in [CHANGELOG.md](CHANGELOG.md).
 

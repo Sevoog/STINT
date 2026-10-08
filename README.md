@@ -1,8 +1,9 @@
-# STINT
+# STINT — Sev's Tiny Internet Network Tool
+**by Sevag Bardakjian**
 
-**Sev's Tiny Internet Network Tool** — A modern macOS network utility app inspired by Apple's classic Network Utility that was deprecated after macOS Monterey. Built with SwiftUI for both Intel and Apple Silicon Macs.
+A modern macOS network utility inspired by Apple's classic Network Utility, which was deprecated after macOS Monterey. Built with SwiftUI for both Intel and Apple Silicon Macs.
 
-Free and open source under the [GNU GPL v3](LICENSE). No accounts, analytics, telemetry, or crash reporting. See [Privacy](#privacy) for what STINT contacts and stores.
+Free and open source under the [GNU GPL v3](LICENSE). No accounts, analytics, telemetry, or crash reporting. See [Privacy & Security](#privacy--security) for everything STINT contacts, what it stores, and what it can do on your network.
 
 If STINT is useful to you, you can [buy me a coffee](https://buymeacoffee.com/sevoog).
 
@@ -62,7 +63,8 @@ shasum -a 256 ~/Downloads/STINT-*.zip
 ## Requirements
 
 - macOS 13.0 (Ventura) or later
-- Xcode 15.0 or later (Xcode 26 for Liquid Glass support)
+- Universal binary (Apple Silicon + Intel)
+- To build: Xcode 15.0 or later (Xcode 26 for Liquid Glass support)
 
 ## Building
 
@@ -70,11 +72,15 @@ shasum -a 256 ~/Downloads/STINT-*.zip
 
 1. Open `STINT.xcodeproj` in Xcode
 2. Select your development team in Signing & Capabilities (or disable signing for local use)
-3. Build and run (Cmd+R)
+3. Build and run (Cmd+R); run the tests (Cmd+U, 17 tests in `STINTTests`)
 
 ### Option 2: Command Line
 
 ```bash
+# Run the tests
+xcodebuild -project STINT.xcodeproj -scheme STINT test
+
+
 # Build for both Intel and Apple Silicon (Universal Binary)
 xcodebuild -project STINT.xcodeproj \
   -scheme STINT \
@@ -105,35 +111,62 @@ Results from every tool can be exported:
 - Choose format: Plain Text, CSV, or JSON
 - Save to a custom location or quick-export to Downloads
 
-## Permissions
-
-The app requires network access to function. Since it uses system networking commands (`ping`, `traceroute`, `netstat`, etc.), it runs without app sandbox restrictions.
-
-For full functionality, you may need to:
-- Approve STINT the first time you open it, because it isn't notarized by Apple (see [Install](#install))
-- Allow **Local Network** access when prompted (macOS 15 and later). Bonjour browsing and port scans of devices on your network need it; you can change it later in System Settings > Privacy & Security > Local Network
-
 ## macOS 26 Liquid Glass
 
 When compiled with Xcode 26 and running on macOS Tahoe (26), STINT's control layer adopts the new Liquid Glass design language: the tool action buttons use the system `.glass` button style, and the window and menu-bar chrome inherit the glass material from the macOS 26 SDK. The selected tab is a refined accent-colored capsule. Output/results panels intentionally stay solid for readability, following Apple's Human Interface Guidelines (glass is for the control and navigation layer, not content-heavy areas).
 
 The Liquid Glass styling is gated behind an availability check, so on macOS 13–15 the app keeps its previous appearance and continues to build against the macOS 13 deployment target.
 
-## Notes
+## Privacy & Security
 
-- The Port Scan feature uses native Swift networking (NWConnection) for efficiency
-- The Bonjour browser uses NWBrowser for native service discovery
-- Most network operations run asynchronously and can be stopped mid-execution
-- The Finger protocol is largely deprecated but included for completeness
-- Some operations (like traceroute) may require running the app with elevated privileges for full functionality
+STINT has no accounts, analytics, telemetry, ads, or crash reporting, and contains no third-party code. It never sends anything to me. This section lists everything STINT does on your network and on your Mac.
 
-## Privacy
+### Contacted automatically
 
-STINT has no accounts, analytics, telemetry, or crash reporting, and makes no network requests on its own.
+Nothing. STINT makes no network requests on its own. The menu bar's connection status comes from macOS's network path monitor, which sends no traffic.
 
-- **Network traffic** goes only to the hosts you point a tool at, plus 8.8.8.8, 1.1.1.1 or apple.com when you click a quick-ping button in the menu bar. DNS lookups use your Mac's configured DNS servers, and Whois asks the public whois servers for the domain you look up. Bonjour listens for services announced on your local network.
-- **Stored data** is limited to STINT's settings (default ping host and count, menu bar icon, launch at login).
-- **Exports** are written only where you choose, or to your Downloads folder with Quick Export.
+### Contacted only when you use a tool
+
+- **Ping, Traceroute, Port Scan:** the host you enter (for Traceroute, the routers along the way reply too). Port Scan opens TCP connections to the ports you choose and closes them straight away.
+- **Lookup:** your Mac's configured DNS servers, asked about the name you enter.
+- **Whois:** the IANA whois server, then the whois servers it refers to for the name or address you enter.
+- **Finger:** the host in the address you enter.
+- **Bonjour:** sends browse queries and listens for services announced on your local network (mDNS).
+- **Menu bar quick ping:** 8.8.8.8 (Google), 1.1.1.1 (Cloudflare) or apple.com, only when you click its button.
+- **Info and Netstat:** nothing; they read your Mac's own network state.
+
+### System tools STINT runs
+
+`/sbin/ping`, `/usr/sbin/traceroute`, `/usr/sbin/netstat`, `/usr/bin/nslookup`, `/usr/bin/whois`, `/usr/bin/finger` and `/sbin/ifconfig`. What you type is passed to them as an argument, never through a shell. A running tool stops when you switch tools, close the window, or quit STINT.
+
+### Permissions
+
+- **First open** (not notarized): approve STINT once in System Settings → Privacy & Security; see [Install](#install).
+- **Local Network** (macOS 15+). macOS asks the first time STINT, or a tool it launches such as `ping`, contacts a device on your local network. If you decline, Bonjour and anything aimed at your local network won't reach it, and Bonjour and Port Scan tell you so. You can change it later in System Settings → Privacy & Security → Local Network.
+- **Login Items**: only if you turn on Launch at Login, which registers STINT as a login item.
+- STINT never asks for Location Services, Notifications, the Keychain, or Full Disk Access.
+
+### Stored on your Mac
+
+- STINT's settings (default ping host and count, menu bar icon, launch at login), in its preferences file.
+- Exports, only where you save them, or in your Downloads folder with Quick Export.
+
+### Security notes
+
+- **Not sandboxed.** The App Sandbox would block the system tools listed above, so STINT runs with the same file access as any app you launch yourself. It writes only what's listed above.
+- **Not notarized.** Builds are ad-hoc signed and haven't been checked by Apple's notarization service.
+- **Plaintext protocols.** DNS lookups, Whois (TCP 43), Finger (TCP 79), Bonjour, and the probes from Ping, Traceroute and Port Scan are unencrypted, so what they carry is visible on the network path.
+- **Port scanning** can be unwelcome on networks you don't run. Only scan hosts you own or have permission to test.
+
+## Architecture
+
+- SwiftUI, no third-party dependencies; Swift Charts for the ping graph
+- App Sandbox **disabled**: the tools run Apple's own command-line utilities (direct distribution only)
+- Ping, Traceroute, Netstat, Lookup, Whois and Finger stream the system tool's output live (`Process`), and every run can be stopped
+- Port Scan uses the Network framework (`NWConnection`) with 64 probes in flight; Bonjour uses `NWBrowser`
+- Info combines `getifaddrs`, SystemConfiguration (adapter names), IOKit (vendor and model) and `ifconfig`/`netstat`
+- Menu bar widget: `MenuBarExtra` with an `NWPathMonitor`
+- Unit tests (XCTest) in `STINTTests`; screenshots are rendered from the app's own views by `marketing/render.sh`
 
 ## Changelog
 

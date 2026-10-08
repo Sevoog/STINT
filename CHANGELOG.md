@@ -41,13 +41,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   silently finding nothing.
 - Copyright notice in the app's About panel.
 - **README:** screenshots, install steps for the un-notarized download (Open Anyway), a
-  Privacy section, and a Buy Me a Coffee link (also the repository's Sponsor button).
+  full Privacy & Security section (what STINT contacts and when, the system tools it runs,
+  permissions, what it stores, security notes), an Architecture section, and a Buy Me a
+  Coffee link (also the repository's Sponsor button).
+- **Unit tests** (`STINTTests`, 17 tests, ⌘U): the ping, link-speed and netstat parsers,
+  exports, port probes, and regression tests for this release's process and port-scan fixes.
+  The scheme is now shared so the tests run from a fresh clone.
+- **Privacy manifest** (`PrivacyInfo.xcprivacy`) declaring STINT's only required-reason API,
+  UserDefaults for its own settings.
 - `marketing/`: renders the README screenshots from the app's own views with placeholder
   data (`render.sh`) and frames them (`build.py`).
 
 ### Changed
+- **Bundle identifier is now `com.sevagbardakjian.stint`** (was `com.sevag.stint`), matching
+  SNAP. macOS treats it as a new app, so settings from earlier builds don't carry over, and
+  Local Network access and Launch at Login are asked for again.
 - The Settings → About version number now comes from the app bundle instead of being
   hard-coded.
+- README: removed the note that Traceroute may need elevated privileges; macOS's
+  `traceroute` already runs with the privileges it needs.
 
 ## [1.3.0] - 2026-05-26
 

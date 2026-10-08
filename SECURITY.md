@@ -12,7 +12,7 @@ STINT is a network tool that runs unsandboxed and launches system tools on your 
 
 - How STINT launches system tools (ping, traceroute, netstat, nslookup, whois, finger, ifconfig) and passes your input to them.
 - Parsing of command output and untrusted network input (Bonjour/mDNS results, port scan responses) that could crash STINT or be exploited.
-- Anything that sends data somewhere the [Privacy](README.md#privacy) section doesn't say it goes.
+- Anything that sends data somewhere the [Privacy & Security](README.md#privacy--security) section doesn't say it goes.
 - Exported files: what they contain and where they're written.
 
 ## Supported versions
