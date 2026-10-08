@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STINT — Liquid Glass Concept</title>
+<style>
+  :root {
+    --glass-tint: rgba(255, 255, 255, 0.18);
+    --glass-tint-strong: rgba(255, 255, 255, 0.30);
+    --glass-stroke: rgba(255, 255, 255, 0.55);
+    --glass-stroke-soft: rgba(255, 255, 255, 0.22);
+    --text: rgba(28, 28, 30, 0.92);
+    --text-secondary: rgba(40, 40, 45, 0.62);
+    --accent: #0a84ff;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--sans);
+    /* Vivid "desktop wallpaper" so the glass translucency is visible */
+    background:
+      radial-gradient(circle at 18% 20%, #ff7eb3 0%, transparent 45%),
+      radial-gradient(circle at 82% 18%, #ff9f5a 0%, transparent 42%),
+      radial-gradient(circle at 75% 85%, #6a5cff 0%, transparent 50%),
+      radial-gradient(circle at 25% 88%, #2bd4c4 0%, transparent 48%),
+      linear-gradient(135deg, #5b6cff 0%, #b14cff 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 48px;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .caption {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    color: rgba(255,255,255,0.92);
+    background: rgba(0,0,0,0.22);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  /* ---- The main app window ---- */
+  .window {
+    width: 760px;
+    border-radius: 26px;
+    overflow: hidden;
+    background: var(--glass-tint);
+    backdrop-filter: blur(34px) saturate(180%);
+    -webkit-backdrop-filter: blur(34px) saturate(180%);
+    border: 1px solid var(--glass-stroke-soft);
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.38),
+      0 8px 24px rgba(0,0,0,0.22),
+      inset 0 1px 0 var(--glass-stroke),         /* top specular highlight */
+      inset 0 -1px 0 rgba(255,255,255,0.10);
+  }
+
+  /* ---- Title / toolbar (floating glass) ---- */
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06));
+    border-bottom: 1px solid rgba(255,255,255,0.14);
+  }
+  .traffic { display: flex; gap: 8px; }
+  .traffic span {
+    width: 12px; height: 12px; border-radius: 50%;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.18);
+  }
+  .traffic .r { background: #ff5f57; }
+  .traffic .y { background: #febc2e; }
+  .traffic .g { background: #28c840; }
+  .titlebar .title {
+    flex: 1; text-align: center;
+    font-size: 13px; font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.2px;
+  }
+  .titlebar .title small { font-weight: 400; color: var(--text-secondary); }
+
+  /* ---- Tab bar: each tab is a glass pill ---- */
+  .tabbar {
+    display: flex;
+    gap: 6px;
+    padding: 12px 14px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 7px 13px;
+    border-radius: 999px;
+    color: var(--text-secondary);
+    cursor: default;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+  }
+  .tab:hover { color: var(--text); background: rgba(255,255,255,0.16); }
+  .tab.active {
+    color: var(--text);
+    background: var(--glass-tint-strong);
+    border: 1px solid var(--glass-stroke);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.7),
+      0 2px 8px rgba(0,0,0,0.18);
+  }
+
+  .divider { height: 1px; background: rgba(255,255,255,0.12); margin: 0 14px; }
+
+  /* ---- Content area ---- */
+  .content { padding: 18px 20px 22px; }
+  .hint { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
+
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+
+  /* Glass input field */
+  .field {
+    width: 220px;
+    font-family: var(--sans);
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 11px;
+    color: var(--text);
+    background: rgba(255,255,255,0.28);
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .ex { font-size: 11px; color: var(--text-secondary); }
+
+  .radio { display: flex; align-items: center; gap: 7px; font-size: 12px; margin-bottom: 10px; color: var(--text); }
+  .dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--text-secondary); position: relative; }
+  .dot.sel { border-color: var(--accent); }
+  .dot.sel::after { content:""; position:absolute; inset:3px; border-radius:50%; background: var(--accent); }
+
+  /* Glass buttons */
+  .btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 11px;
+    color: var(--text);
+    background: var(--glass-tint-strong);
+    border: 1px solid var(--glass-stroke);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 2px 8px rgba(0,0,0,0.14);
+    cursor: default;
+    transition: all 0.2s ease;
+  }
+  .btn:hover { background: rgba(255,255,255,0.42); transform: translateY(-1px); }
+  .btn.primary {
+    color: #fff;
+    background: linear-gradient(180deg, #2a93ff, #0a72e6);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 14px rgba(10,118,230,0.5);
+  }
+  .btn.ghost { padding: 8px 12px; font-size: 11px; }
+  .spacer { flex: 1; }
+
+  /* Output panel — frosted, recessed glass */
+  .output {
+    margin-top: 6px;
+    height: 196px;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--text);
+    overflow: hidden;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.28);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4);
+    white-space: pre-wrap;
+  }
+  .output .ok { color: #0a8a3a; }
+  .output .dim { color: var(--text-secondary); }
+
+  .statusrow { display:flex; align-items:center; gap:8px; margin-top:12px; font-size:11px; color: var(--text-secondary); }
+  .spin { width:13px; height:13px; border-radius:50%; border:2px solid rgba(255,255,255,0.5); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- Floating menu-bar widget ---- */
+  .widget {
+    width: 248px;
+    align-self: flex-start;
+    margin-top: 18px;
+    border-radius: 22px;
+    padding: 14px;
+    background: var(--glass-tint);
+    backdrop-filter: blur(34px) saturate(180%);
+    -webkit-backdrop-filter: blur(34px) saturate(180%);
+    border: 1px solid var(--glass-stroke-soft);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.34), inset 0 1px 0 var(--glass-stroke);
+  }
+  .widget h3 { font-size: 14px; display:flex; align-items:center; gap:7px; margin-bottom:10px; }
+  .widget .globe { color: var(--accent); }
+  .wdiv { height:1px; background: rgba(255,255,255,0.16); margin: 10px 0; }
+  .status { display:flex; align-items:center; gap:7px; font-size:12px; }
+  .led { width:8px; height:8px; border-radius:50%; background:#28c840; box-shadow:0 0 8px #28c840; }
+  .ip { font-family: var(--mono); font-size:12px; color: var(--text-secondary); margin-top:4px; }
+  .pingbtns { display:flex; gap:7px; margin-top:6px; }
+  .pingbtns .btn { padding:6px 10px; font-size:11px; }
+  .waction { display:flex; align-items:center; gap:8px; font-size:12px; padding:6px 2px; color: var(--text); }
+</style>
+</head>
+<body>
+  <div class="caption">STINT · Liquid Glass concept (visual mockup — not the real app)</div>
+
+  <!-- Main window -->
+  <div class="window">
+    <div class="titlebar">
+      <div class="traffic"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+      <div class="title">STINT <small>— Ping</small></div>
+      <div style="width:54px"></div>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab">Info</div>
+      <div class="tab">Netstat</div>
+      <div class="tab active">Ping</div>
+      <div class="tab">Lookup</div>
+      <div class="tab">Traceroute</div>
+      <div class="tab">Whois</div>
+      <div class="tab">Finger</div>
+      <div class="tab">Port Scan</div>
+      <div class="tab">Bonjour</div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="content">
+      <div class="hint">Enter the network address to ping.</div>
+
+      <div class="row">
+        <input class="field" value="8.8.8.8" readonly>
+        <span class="ex">(ex. 10.0.2.1 or www.example.com)</span>
+      </div>
+
+      <div class="radio"><span class="dot"></span>Send an unlimited number of pings</div>
+      <div class="row">
+        <div class="radio" style="margin:0"><span class="dot sel"></span>Send only</div>
+        <input class="field" style="width:52px" value="10" readonly>
+        <span style="font-size:12px">pings</span>
+        <div class="spacer"></div>
+        <div class="btn ghost">⤴ Export</div>
+        <div class="btn primary">Ping</div>
+      </div>
+
+      <div class="output">PING 8.8.8.8 (8.8.8.8): 56 data bytes
+<span class="ok">64 bytes from 8.8.8.8: icmp_seq=0 ttl=117 time=11.8 ms</span>
+<span class="ok">64 bytes from 8.8.8.8: icmp_seq=1 ttl=117 time=12.4 ms</span>
+<span class="ok">64 bytes from 8.8.8.8: icmp_seq=2 ttl=117 time=11.2 ms</span>
+<span class="ok">64 bytes from 8.8.8.8: icmp_seq=3 ttl=117 time=13.0 ms</span>
+
+<span class="dim">--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 4 received, 0.0% packet loss
+round-trip min/avg/max = 11.2/12.1/13.0 ms</span></div>
+
+      <div class="statusrow"><div class="spin"></div>Ping has started…</div>
+    </div>
+  </div>
+
+  <!-- Menu bar widget -->
+  <div class="widget">
+    <h3><span class="globe">◉</span> STINT</h3>
+    <div class="wdiv"></div>
+    <div class="status"><span class="led"></span>Status: Connected</div>
+    <div class="ip">IP: 192.168.1.42</div>
+    <div class="wdiv"></div>
+    <div style="font-size:12px;margin-bottom:6px;">Quick Ping: <span style="color:#0a8a3a;font-family:var(--mono)">12 ms</span></div>
+    <div class="pingbtns">
+      <div class="btn">8.8.8.8</div>
+      <div class="btn">1.1.1.1</div>
+      <div class="btn">apple.com</div>
+    </div>
+    <div class="wdiv"></div>
+    <div class="waction">▭ Open STINT</div>
+    <div class="waction">⧉ Copy IP Address</div>
+  </div>
+</body>
+</html>

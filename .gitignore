@@ -13,3 +13,6 @@ DerivedData/
 .swiftpm/
 .build/
 Packages/
+
+# Claude Code per-machine settings
+.claude/settings.local.json

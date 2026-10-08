@@ -156,7 +156,16 @@ struct BonjourView: View {
     @State private var useCustomType = false
     @State private var browseAllTypes = false
     @State private var selectedService: BonjourService?
-    
+
+    private var resultsText: String {
+        guard !browser.services.isEmpty else { return "" }
+        var text = "Name\tType\tDomain\n"
+        for service in browser.services {
+            text += "\(service.name)\t\(service.type)\t\(service.domain)\n"
+        }
+        return text
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Service type selection
@@ -198,7 +207,13 @@ struct BonjourView: View {
                     }
                 
                 Spacer()
-                
+
+                ExportButton(
+                    title: "Bonjour_services",
+                    output: resultsText,
+                    command: browseAllTypes ? "browse all common services" : "browse \(useCustomType ? customServiceType : selectedServiceType.type)"
+                )
+
                 Button(browser.isSearching ? "Stop" : "Browse") {
                     if browser.isSearching {
                         browser.stop()
@@ -214,6 +229,7 @@ struct BonjourView: View {
                     }
                 }
                 .disabled(!browser.isSearching && useCustomType && customServiceType.isEmpty)
+                .glassActionButton()
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)

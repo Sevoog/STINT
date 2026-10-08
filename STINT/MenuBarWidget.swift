@@ -14,7 +14,7 @@ struct MenuBarWidget: View {
             HStack {
                 Image(systemName: "globe")
                     .foregroundColor(.accentColor)
-                Text("Packetry")
+                Text("STINT")
                     .font(.headline)
                 Spacer()
             }
@@ -62,25 +62,28 @@ struct MenuBarWidget: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .glassActionButton()
                 
                 Button("1.1.1.1") {
                     quickPing("1.1.1.1")
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .glassActionButton()
                 
                 Button("apple.com") {
                     quickPing("apple.com")
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .glassActionButton()
             }
             
             Divider()
             
             // Quick actions
             Button(action: openMainWindow) {
-                Label("Open Packetry", systemImage: "rectangle.expand.vertical")
+                Label("Open STINT", systemImage: "rectangle.expand.vertical")
             }
             .buttonStyle(.plain)
             
@@ -95,7 +98,7 @@ struct MenuBarWidget: View {
             Button(action: {
                 NSApplication.shared.terminate(nil)
             }) {
-                Label("Quit Packetry", systemImage: "power")
+                Label("Quit STINT", systemImage: "power")
             }
             .buttonStyle(.plain)
         }
@@ -208,7 +211,8 @@ struct MenuBarWidget: View {
     
     private func openMainWindow() {
         NSApplication.shared.activate(ignoringOtherApps: true)
-        if let window = NSApplication.shared.windows.first(where: { $0.title == "Packetry" || $0.contentView != nil }) {
+        // Bring the main app window forward, skipping the menu bar popover and other panels
+        if let window = NSApplication.shared.windows.first(where: { $0.canBecomeMain && $0.styleMask.contains(.titled) }) {
             window.makeKeyAndOrderFront(nil)
         }
     }

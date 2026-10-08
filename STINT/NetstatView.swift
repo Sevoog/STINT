@@ -48,12 +48,19 @@ struct NetstatView: View {
                 .frame(width: 100)
                 
                 Spacer()
-                
+
+                ExportButton(
+                    title: "Netstat_\(displayOptions[displayOption].0)",
+                    output: runner.output,
+                    command: "netstat \((displayOptions[displayOption].1 + protocolOptions[protocolOption].1).joined(separator: " "))"
+                )
+
                 Button(action: runNetstat) {
                     Text("Netstat")
                         .frame(width: 70)
                 }
                 .disabled(runner.isRunning)
+                .glassActionButton()
             }
             .padding(.horizontal, 20)
             

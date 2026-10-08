@@ -51,13 +51,20 @@ struct LookupView: View {
                 .frame(width: 250)
                 
                 Spacer()
-                
+
+                ExportButton(
+                    title: "Lookup_\(address.isEmpty ? "results" : address)",
+                    output: runner.output,
+                    command: "nslookup \(lookupTypes[lookupType].1.first.map { "-type=\($0) " } ?? "")\(address)"
+                )
+
                 Button(action: runLookup) {
                     Text("Lookup")
                         .frame(width: 60)
                 }
                 .disabled(address.isEmpty || runner.isRunning)
                 .keyboardShortcut(.return, modifiers: [])
+                .glassActionButton()
             }
             .padding(.horizontal, 20)
             

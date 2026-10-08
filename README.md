@@ -6,7 +6,7 @@
 
 - **Info** - View network interface information (IP address, MAC address, link status, transfer statistics)
 - **Netstat** - Display routing tables, network statistics, multicast info, and socket states
-- **Ping** - Ping network hosts with configurable count or unlimited mode
+- **Ping** - Ping network hosts with configurable count or unlimited mode, with a live latency chart (Swift Charts) and Chart/Text toggle
 - **Lookup** - DNS lookups with support for various record types (A, AAAA, MX, NS, TXT, etc.)
 - **Traceroute** - Trace the route to a network host
 - **Whois** - Look up domain registration information
@@ -62,7 +62,7 @@ Toggle the menu bar icon visibility via View > Show Menu Bar Icon (Cmd+Shift+M).
 
 ## Export Functionality
 
-Results from Ping, Traceroute, and other tools can be exported:
+Results from every tool can be exported:
 - Click the Export button next to the action button
 - Choose format: Plain Text, CSV, or JSON
 - Save to a custom location or quick-export to Downloads
@@ -77,7 +77,9 @@ For full functionality, you may need to:
 
 ## macOS 26 Liquid Glass
 
-When compiled with Xcode 26 and running on macOS Tahoe (26), the app automatically adopts the new Liquid Glass design language. Standard SwiftUI controls, toolbars, and navigation elements will display with the translucent, light-bending Liquid Glass material.
+When compiled with Xcode 26 and running on macOS Tahoe (26), STINT's control layer adopts the new Liquid Glass design language: the tool action buttons use the system `.glass` button style, and the window and menu-bar chrome inherit the glass material from the macOS 26 SDK. The selected tab is a refined accent-colored capsule. Output/results panels intentionally stay solid for readability, following Apple's Human Interface Guidelines (glass is for the control and navigation layer, not content-heavy areas).
+
+The Liquid Glass styling is gated behind an availability check, so on macOS 13–15 the app keeps its previous appearance and continues to build against the macOS 13 deployment target.
 
 ## Notes
 
@@ -86,6 +88,10 @@ When compiled with Xcode 26 and running on macOS Tahoe (26), the app automatical
 - Most network operations run asynchronously and can be stopped mid-execution
 - The Finger protocol is largely deprecated but included for completeness
 - Some operations (like traceroute) may require running the app with elevated privileges for full functionality
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 
 ## Author
 

@@ -1,52 +1,57 @@
 import SwiftUI
 
+// The set of tools shown in the tab bar. Adding or reordering a tool is a single
+// change here — the tab bar and content area are both derived from this enum.
+enum Tool: String, CaseIterable, Identifiable {
+    case info = "Info"
+    case netstat = "Netstat"
+    case ping = "Ping"
+    case lookup = "Lookup"
+    case traceroute = "Traceroute"
+    case whois = "Whois"
+    case finger = "Finger"
+    case portScan = "Port Scan"
+    case bonjour = "Bonjour"
+
+    var id: String { rawValue }
+    var title: String { rawValue }
+
+    @ViewBuilder
+    var view: some View {
+        switch self {
+        case .info: InfoView()
+        case .netstat: NetstatView()
+        case .ping: PingView()
+        case .lookup: LookupView()
+        case .traceroute: TracerouteView()
+        case .whois: WhoisView()
+        case .finger: FingerView()
+        case .portScan: PortScanView()
+        case .bonjour: BonjourView()
+        }
+    }
+}
+
 struct ContentView: View {
-    @State private var selectedTab = 0
-    
+    @State private var selectedTool: Tool = .info
+
     var body: some View {
         VStack(spacing: 0) {
             // Tab bar
             HStack(spacing: 0) {
-                TabButton(title: "Info", index: 0, selectedTab: $selectedTab)
-                TabButton(title: "Netstat", index: 1, selectedTab: $selectedTab)
-                TabButton(title: "Ping", index: 2, selectedTab: $selectedTab)
-                TabButton(title: "Lookup", index: 3, selectedTab: $selectedTab)
-                TabButton(title: "Traceroute", index: 4, selectedTab: $selectedTab)
-                TabButton(title: "Whois", index: 5, selectedTab: $selectedTab)
-                TabButton(title: "Finger", index: 6, selectedTab: $selectedTab)
-                TabButton(title: "Port Scan", index: 7, selectedTab: $selectedTab)
-                TabButton(title: "Bonjour", index: 8, selectedTab: $selectedTab)
+                ForEach(Tool.allCases) { tool in
+                    TabButton(tool: tool, selectedTool: $selectedTool)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.top, 8)
-            
+
             Divider()
                 .padding(.top, 8)
-            
+
             // Content area with fixed frame to prevent layout shifts
             ZStack {
-                switch selectedTab {
-                case 0:
-                    InfoView()
-                case 1:
-                    NetstatView()
-                case 2:
-                    PingView()
-                case 3:
-                    LookupView()
-                case 4:
-                    TracerouteView()
-                case 5:
-                    WhoisView()
-                case 6:
-                    FingerView()
-                case 7:
-                    PortScanView()
-                case 8:
-                    BonjourView()
-                default:
-                    InfoView()
-                }
+                selectedTool.view
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
@@ -56,25 +61,26 @@ struct ContentView: View {
 }
 
 struct TabButton: View {
-    let title: String
-    let index: Int
-    @Binding var selectedTab: Int
-    
+    let tool: Tool
+    @Binding var selectedTool: Tool
+
+    private var isSelected: Bool { selectedTool == tool }
+
     var body: some View {
         Button(action: {
             withAnimation(.easeInOut(duration: 0.15)) {
-                selectedTab = index
+                selectedTool = tool
             }
         }) {
-            Text(title)
+            Text(tool.title)
                 .font(.system(size: 11))
-                .padding(.horizontal, 10)
+                .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(selectedTab == index ? Color.accentColor : Color.clear)
+                    Capsule()
+                        .fill(isSelected ? Color.accentColor : Color.clear)
                 )
-                .foregroundColor(selectedTab == index ? .white : .primary)
+                .foregroundColor(isSelected ? .white : .secondary)
         }
         .buttonStyle(.plain)
     }

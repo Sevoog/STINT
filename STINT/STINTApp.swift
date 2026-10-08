@@ -1,9 +1,10 @@
 import SwiftUI
+import ServiceManagement
 
 @main
 struct STINTApp: App {
-    @State private var showMenuBarExtra = true
-    
+    @AppStorage("showMenuBarIcon") private var showMenuBarIcon = true
+
     var body: some Scene {
         // Main window
         WindowGroup {
@@ -16,13 +17,13 @@ struct STINTApp: App {
             
             // Add View menu items
             CommandGroup(after: .windowArrangement) {
-                Toggle("Show Menu Bar Icon", isOn: $showMenuBarExtra)
+                Toggle("Show Menu Bar Icon", isOn: $showMenuBarIcon)
                     .keyboardShortcut("M", modifiers: [.command, .shift])
             }
         }
         
         // Menu bar extra (widget)
-        MenuBarExtra("STINT", systemImage: "globe.americas.fill", isInserted: $showMenuBarExtra) {
+        MenuBarExtra("STINT", systemImage: "globe.americas.fill", isInserted: $showMenuBarIcon) {
             MenuBarWidget()
         }
         .menuBarExtraStyle(.window)
@@ -42,13 +43,33 @@ struct SettingsView: View {
     @AppStorage("showMenuBarIcon") private var showMenuBarIcon = true
     @AppStorage("defaultPingHost") private var defaultPingHost = "8.8.8.8"
     @AppStorage("defaultPingCount") private var defaultPingCount = 10
-    
+
+    private func updateLaunchAtLogin(_ enabled: Bool) {
+        do {
+            if enabled {
+                if SMAppService.mainApp.status != .enabled {
+                    try SMAppService.mainApp.register()
+                }
+            } else {
+                if SMAppService.mainApp.status == .enabled {
+                    try SMAppService.mainApp.unregister()
+                }
+            }
+        } catch {
+            // System call failed — snap the toggle back to the real state
+            launchAtLogin = (SMAppService.mainApp.status == .enabled)
+        }
+    }
+
     var body: some View {
         TabView {
             // General settings
             Form {
                 Section {
                     Toggle("Launch at Login", isOn: $launchAtLogin)
+                        .onChange(of: launchAtLogin) { enabled in
+                            updateLaunchAtLogin(enabled)
+                        }
                     Toggle("Show Menu Bar Icon", isOn: $showMenuBarIcon)
                 }
                 
@@ -61,6 +82,9 @@ struct SettingsView: View {
             }
             .padding(20)
             .frame(width: 400, height: 200)
+            .onAppear {
+                launchAtLogin = (SMAppService.mainApp.status == .enabled)
+            }
             .tabItem {
                 Label("General", systemImage: "gear")
             }
@@ -88,7 +112,7 @@ struct SettingsView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                Text("Version 1.0")
+                Text("Version 1.3.0")
                     .foregroundColor(.secondary)
                 
                 Text("A modern network utility for macOS")
