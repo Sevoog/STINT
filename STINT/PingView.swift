@@ -13,8 +13,8 @@ struct PingSample: Identifiable {
     let latency: Double?
 }
 
-// Parse streamed `ping` output into ordered samples.
-private func parsePingSamples(_ output: String) -> [PingSample] {
+// Parse streamed `ping` output into ordered samples. Internal so STINTTests can reach it.
+func parsePingSamples(_ output: String) -> [PingSample] {
     var result: [PingSample] = []
     var seq = 0
     for line in output.components(separatedBy: "\n") {

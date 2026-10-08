@@ -183,7 +183,7 @@ private func hardwareVendorModel(for bsdName: String) -> (vendor: String?, model
 
 // Turns an ifconfig media line such as "media: autoselect (2500Base-T <full-duplex>)" into
 // "2.5 Gbps". Returns nil when the line names no speed (Wi-Fi, Thunderbolt, inactive).
-private func parseLinkSpeed(fromMediaLine line: String) -> String? {
+func parseLinkSpeed(fromMediaLine line: String) -> String? {
     guard let match = line.range(of: #"\d+(\.\d+)?\s*G?base"#, options: [.regularExpression, .caseInsensitive]) else { return nil }
     let token = line[match].lowercased()
     let isGigabit = token.contains("g")
@@ -240,7 +240,7 @@ private func fetchPacketStats(for interface: String) -> (sent: String, received:
 // Parses `netstat -I <iface> -b`. The Address column is blank for interfaces without a MAC
 // (lo0, utun), which shifts every column after it, so read the seven counters from the right:
 // Ipkts Ierrs Ibytes Opkts Oerrs Obytes Coll.
-private func parsePacketStats(netstatOutput output: String) -> (sent: String, received: String, sendErrors: String, recvErrors: String, collisions: String) {
+func parsePacketStats(netstatOutput output: String) -> (sent: String, received: String, sendErrors: String, recvErrors: String, collisions: String) {
     let lines = output.components(separatedBy: "\n")
     
     if lines.count >= 2 {

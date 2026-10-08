@@ -202,11 +202,12 @@ struct PortScanView: View {
     }
 }
 
-private enum PortState {
+// Internal rather than private so STINTTests can reach the probe.
+enum PortState {
     case open, closed, localNetworkDenied
 }
 
-private func checkPort(host: String, port: Int) async -> PortState {
+func checkPort(host: String, port: Int) async -> PortState {
     return await withCheckedContinuation { continuation in
         let connection = NWConnection(
             host: NWEndpoint.Host(host),
@@ -216,7 +217,7 @@ private func checkPort(host: String, port: Int) async -> PortState {
 
         // The state handler and the timeout both run on this serial queue, so `resumed`
         // is never read and written concurrently. Resuming a continuation twice crashes.
-        let queue = DispatchQueue(label: "com.sevag.stint.portscan")
+        let queue = DispatchQueue(label: "com.sevagbardakjian.stint.portscan")
         var resumed = false
         let finish: (PortState) -> Void = { result in
             guard !resumed else { return }
@@ -249,7 +250,7 @@ private func checkPort(host: String, port: Int) async -> PortState {
     }
 }
 
-private func serviceName(for port: Int) -> String {
+func serviceName(for port: Int) -> String {
     let services: [Int: String] = [
         20: "ftp-data",
         21: "ftp",

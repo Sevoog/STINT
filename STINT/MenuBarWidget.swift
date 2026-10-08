@@ -26,7 +26,7 @@ final class NetworkStatusMonitor: ObservableObject {
                 self?.currentIP = ip
             }
         }
-        monitor.start(queue: DispatchQueue(label: "com.sevag.stint.network-status"))
+        monitor.start(queue: DispatchQueue(label: "com.sevagbardakjian.stint.network-status"))
     }
 }
 
