@@ -5,7 +5,7 @@ All notable changes to STINT are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.1] - 2026-10-08
+## [1.3.1] - 2026-10-12
 
 ### Licensing
 - **STINT is now free and open source under the GNU GPL v3** (`GPL-3.0-only`), with a
